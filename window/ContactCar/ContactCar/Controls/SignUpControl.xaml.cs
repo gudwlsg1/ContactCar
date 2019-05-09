@@ -13,23 +13,23 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ContactCar
+namespace ContactCar.Controls
 {
     /// <summary>
-    /// MainWindow.xaml에 대한 상호 작용 논리
+    /// Interaction logic for SignUpControl.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class SignUpControl : UserControl
     {
-        public MainWindow()
+        public SignUpControl()
         {
             InitializeComponent();
 
-            App.loginViewModel.ShowSignUpControl += LoginViewModel_ShowSignUpControl;
+            this.DataContext = App.loginViewModel;
         }
 
-        private void LoginViewModel_ShowSignUpControl(object sender, EventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            SignUpControl.Visibility = Visibility.Visible;
+            this.Visibility = Visibility.Collapsed;
         }
     }
 }

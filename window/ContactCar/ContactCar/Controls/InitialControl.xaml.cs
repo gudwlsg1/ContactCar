@@ -13,23 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ContactCar
+namespace ContactCar.Controls
 {
     /// <summary>
-    /// MainWindow.xaml에 대한 상호 작용 논리
+    /// Interaction logic for InitialControl.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class InitialControl : UserControl
     {
-        public MainWindow()
+        public InitialControl()
         {
             InitializeComponent();
-
-            App.loginViewModel.ShowSignUpControl += LoginViewModel_ShowSignUpControl;
-        }
-
-        private void LoginViewModel_ShowSignUpControl(object sender, EventArgs e)
-        {
-            SignUpControl.Visibility = Visibility.Visible;
         }
     }
 }

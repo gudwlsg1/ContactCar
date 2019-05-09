@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ContactCar.Model;
+using ContactCar.Network;
+using ContactCar.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +16,9 @@ namespace ContactCar
     /// </summary>
     public partial class App : Application
     {
+        public static User myInfo = new User(); 
+
+        public static NetworkManager networkManager = new NetworkManager();
+        public static LoginViewModel loginViewModel = new LoginViewModel();
     }
 }

@@ -6,8 +6,11 @@
         xmlns:local="clr-namespace:ContactCar"
         xmlns:ctrl="clr-namespace:ContactCar.Controls"
         mc:Ignorable="d"
-        Title="ContactCar" Height="350" Width="525">
+        Title="ContactCar" Height="350" Width="525" WindowState="Maximized"
+        MinHeight="500" MinWidth="525">
     <Grid>
-        
+        <ctrl:LoginControl x:Name="LoginControl" Visibility="Visible"/>
+        <ctrl:SignUpControl x:Name="SignUpControl" Visibility="Collapsed" Background="White"/>
+        <ctrl:InitialControl x:Name="initControl" Visibility="Collapsed"/>
     </Grid>
 </Window>

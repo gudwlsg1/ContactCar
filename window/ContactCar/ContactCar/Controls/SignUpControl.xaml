@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="ContactCar.Controls.SignUpControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ContactCar.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel MinWidth="20" Width="500" MaxWidth="800" VerticalAlignment="Center">
+            <StackPanel>
+                <TextBlock Text="아이디 *" Background="White" FontSize="20" FontFamily="NanumBarunGothic"/>
+                <TextBox FontSize="20" FontFamily="NanumBarunGothic"
+                         Height="30" Text="{Binding Id}"/>
+            </StackPanel>
+
+            <StackPanel Margin="0 10 0 0">
+                <TextBlock Text="비밀번호 *" Background="White"  FontSize="20" FontFamily="NanumBarunGothic"/>
+                <PasswordBox FontSize="20" FontFamily="NanumBarunGothic"
+                             Height="30" 
+                             local:PasswordHelper.Attach="True"
+                             local:PasswordHelper.Password="{Binding Password, Mode=TwoWay}"/>
+            </StackPanel>
+
+            <StackPanel Margin="0 10 0 0">
+                <TextBlock Text="이름 *" Background="White"  FontSize="20" FontFamily="NanumBarunGothic"/>
+                <TextBox FontSize="20" FontFamily="NanumBarunGothic" 
+                         Height="30" Text="{Binding Name}"/>
+            </StackPanel>
+
+            <StackPanel Margin="0 10 0 0">
+                <TextBlock Text="이메일" Background="White"  FontSize="20" FontFamily="NanumBarunGothic"/>
+                <TextBox FontSize="20" FontFamily="NanumBarunGothic"
+                         Height="30" Text="{Binding Email}"/>
+            </StackPanel>
+
+            <StackPanel Margin="0 10 0 0">
+                <TextBlock Text="주소" Background="White"  FontSize="20" FontFamily="NanumBarunGothic"/>
+                <TextBox  FontSize="20" FontFamily="NanumBarunGothic"
+                          Height="30" Text="{Binding Address}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0 35 0 0 " HorizontalAlignment="Center">
+                <Button Content="확인" MinWidth="60" Command="{Binding SignUpCommand}"/>
+                <Button Content="취소" MinWidth="60" 
+                        Margin="20 0 0 0" Click="Button_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
