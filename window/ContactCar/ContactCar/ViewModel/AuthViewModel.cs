@@ -144,7 +144,11 @@ namespace ContactCar.ViewModel
                 return;
             }
 
-            var data = await App.networkManager.LoginAsync(_id, _password);
+            JObject json = new JObject();
+            json["userId"] = _id;
+            json["password"] = _password;
+
+            var data = await App.networkManager.LoginAsync(json);
 
             if (data.Data != null && (int)HttpStatusCode.OK == data.Status)
             {// 로그인 성공

@@ -15,7 +15,7 @@ namespace ContactCar.Network
             return new RestClient("http://localhost:8000/") { Timeout = 15000 };
         }
 
-        public Task<CResponse<T>> GetResponse<T>(string url, Method method, JObject data = null)
+        public async Task<CResponse<T>> GetResponseAsync<T>(string url, Method method, JObject data = null)
         {
             var client = createClient();
             var request = new RestRequest(url, method);
@@ -26,8 +26,8 @@ namespace ContactCar.Network
                 request.AddParameter("application/json", data.ToString(), ParameterType.RequestBody);
             }
 
-            var response = client.Execute<CResponse<T>>(request);
-            
+            var response = await client.ExecuteTaskAsync<CResponse<T>>(request);
+
             return response.Data;
         }
     }
