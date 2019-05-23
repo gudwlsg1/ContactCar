@@ -11,18 +11,18 @@ namespace ContactCar.Network
 {
     public partial class NetworkManager
     {
-        public CResponse<User> Login(string id, string pw)
+        public async Task<CResponse<User>> LoginAsync(string id, string pw)
         {
             JObject json = new JObject();
             json["userId"] = id;
             json["password"] = pw;
 
-            return GetResponse<User>("auth/login", Method.POST, json);
+            return await GetResponse<User>("auth/login", Method.POST, json);
         } 
 
-        public CResponse<User> SignUp(JObject json)
+        public async Task<CResponse<User>> SignUp(JObject json)
         {
-            return GetResponse<User>("auth", Method.POST, json);
+            return await GetResponse<User>("auth", Method.POST, json);
         }
     }
 }

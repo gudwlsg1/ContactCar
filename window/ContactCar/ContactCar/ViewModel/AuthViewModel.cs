@@ -87,9 +87,6 @@ namespace ContactCar.ViewModel
 
         public event AuthResultHandler LoginResult;
         public event AuthResultHandler SignUpResult;
-
-        //TODO: UI에서 Event 생성 후 호출하도록 변경
-        public event EventHandler ShowSignUpControl;
         #endregion
 
         public AuthViewModel()
@@ -99,11 +96,11 @@ namespace ContactCar.ViewModel
 
         private void InitCommand()
         {
-            LoginCommand = new DelegateCommand(OnLogin);
-            SignUpCommand = new DelegateCommand(OnSignUp);
+            LoginCommand = new DelegateCommand(async () => await OnLoginAsync());
+            SignUpCommand = new DelegateCommand(async () => await OnSignUpAsync());
         }
 
-        private void OnSignUp()
+        private async Task OnSignUpAsync()
         {
             JObject json = new JObject();
             json["userId"] = _id;
@@ -116,8 +113,7 @@ namespace ContactCar.ViewModel
             ResetProperty();
 
             return;
-            //TODO: await 추가
-            var data = App.networkManager.SignUp(json);
+            var data = await App.networkManager.SignUp(json);
 
             if (data == null)
             {
@@ -141,14 +137,14 @@ namespace ContactCar.ViewModel
             Password = null;
         }
 
-        private void OnLogin()
+        private async Task OnLoginAsync()
         {
             if (!NetworkInterface.GetIsNetworkAvailable())
             {
                 return;
             }
 
-            var data = App.networkManager.Login(_id, _password);
+            var data = await App.networkManager.LoginAsync(_id, _password);
 
             if (data.Data != null && (int)HttpStatusCode.OK == data.Status)
             {// 로그인 성공

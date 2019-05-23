@@ -15,7 +15,7 @@ namespace ContactCar.Network
             return new RestClient("http://localhost:8000/") { Timeout = 15000 };
         }
 
-        public CResponse<T> GetResponse<T>(string url, Method method, JObject data = null)
+        public Task<CResponse<T>> GetResponse<T>(string url, Method method, JObject data = null)
         {
             var client = createClient();
             var request = new RestRequest(url, method);
