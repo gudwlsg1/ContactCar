@@ -9,6 +9,12 @@
     <Grid>
         <StackPanel MinWidth="20" Width="500" MaxWidth="800" VerticalAlignment="Center">
             <StackPanel>
+                <TextBlock Text="{Binding Desc}" Background="White"
+                           FontSize="40" FontFamily="NanumBarunGothic" TextAlignment="Center"
+                           Foreground="Black"/>
+            </StackPanel>
+
+            <StackPanel Margin="0 50 0 0">
                 <TextBlock Text="아이디 *" Background="White" FontSize="20" FontFamily="NanumBarunGothic"/>
                 <TextBox FontSize="20" FontFamily="NanumBarunGothic"
                          Height="30" Text="{Binding Id}"/>

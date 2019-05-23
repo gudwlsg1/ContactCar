@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ContactCar.Model;
 
 namespace ContactCar
 {
@@ -24,12 +25,24 @@ namespace ContactCar
         {
             InitializeComponent();
 
-            App.loginViewModel.ShowSignUpControl += LoginViewModel_ShowSignUpControl;
+            LoginControl.ShowSignUpCtrl += LoginControl_ShowSignUpCtrl;
+            App.authViewModel.LoginResult += AuthViewModel_LoginResult;
         }
 
-        private void LoginViewModel_ShowSignUpControl(object sender, EventArgs e)
+        private void LoginControl_ShowSignUpCtrl(object sender, EventArgs e)
         {
             SignUpControl.Visibility = Visibility.Visible;
+        }
+
+        private void AuthViewModel_LoginResult(bool success, User myInfo)
+        {
+            if (success)
+            {
+                App.myInfo = myInfo;
+
+                LoginControl.Visibility = Visibility.Collapsed;
+                HomeControl.Visibility = Visibility.Visible;
+            }
         }
     }
 }

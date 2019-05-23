@@ -81,7 +81,8 @@
                          local:PasswordHelper.Attach="True"
                          local:PasswordHelper.Password="{Binding Password, Mode=TwoWay}"/>
             <StackPanel Orientation="Horizontal" Margin="0 30 0 0 " HorizontalAlignment="Center">
-                <Button Content="회원가입" MinWidth="60" Command="{Binding SignUpCtrlCommand}"/>
+                <Button Content="회원가입" MinWidth="60" 
+                        Click="Button_Click"/>
                 <Button Content="로그인" MinWidth="60" 
                         Margin="20 0 0 0" Command="{Binding LoginCommand}"/>
             </StackPanel>

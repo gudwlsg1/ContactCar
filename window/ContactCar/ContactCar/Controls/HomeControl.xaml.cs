@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace ContactCar.Controls
 {
     /// <summary>
-    /// Interaction logic for InitialControl.xaml
+    /// Interaction logic for HomeControl.xaml
     /// </summary>
-    public partial class InitialControl : UserControl
+    public partial class HomeControl : UserControl
     {
-        public InitialControl()
+        public HomeControl()
         {
             InitializeComponent();
         }

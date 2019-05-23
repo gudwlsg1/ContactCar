@@ -24,7 +24,17 @@ namespace ContactCar.Controls
         {
             InitializeComponent();
 
-            this.DataContext = App.loginViewModel;
+            this.DataContext = App.authViewModel;
+
+            App.authViewModel.SignUpResult += AuthViewModel_SignUpResult;
+        }
+
+        private void AuthViewModel_SignUpResult(bool success, Model.User myInfo)
+        {
+            if (success)
+            {
+                this.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

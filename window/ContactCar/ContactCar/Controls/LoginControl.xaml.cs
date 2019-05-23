@@ -22,6 +22,7 @@ namespace ContactCar.Controls
     /// </summary>
     public partial class LoginControl : UserControl
     {
+        public event EventHandler ShowSignUpCtrl;
         public LoginControl()
         {
             InitializeComponent();
@@ -31,16 +32,12 @@ namespace ContactCar.Controls
 
         private void LoginControl_Loaded(object sender, RoutedEventArgs e)
         {
-            this.DataContext = App.loginViewModel;
-            App.loginViewModel.LoginResult += LoginViewModel_LoginResult;
+            this.DataContext = App.authViewModel;
         }
 
-        private void LoginViewModel_LoginResult(bool success, User data)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (success)
-            {
-                App.myInfo = data;
-            }
+            ShowSignUpCtrl?.Invoke(this, null);
         }
     }
 

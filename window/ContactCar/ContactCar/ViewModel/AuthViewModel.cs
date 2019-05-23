@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace ContactCar.ViewModel
 {
-    public class LoginViewModel : BindableBase
+    public class AuthViewModel : BindableBase
     {
         #region Property
         private string _id;
@@ -65,22 +65,34 @@ namespace ContactCar.ViewModel
                 SetProperty(ref _address, value);
             }
         }
+
+        private string _desc;
+        public string Desc
+        {
+            get => _desc;
+            set
+            {
+                SetProperty(ref _desc, value);
+            }
+        }
         #endregion
 
         #region Command
         public ICommand LoginCommand { get; set; }
         public ICommand SignUpCommand { get; set; }
-        public ICommand SignUpCtrlCommand { get; set; }
         #endregion
 
         #region Event
-        public delegate void LoginResultHandler(bool success, User myInfo);
-        public event LoginResultHandler LoginResult;
+        public delegate void AuthResultHandler(bool success, User myInfo);
 
+        public event AuthResultHandler LoginResult;
+        public event AuthResultHandler SignUpResult;
+
+        //TODO: UI에서 Event 생성 후 호출하도록 변경
         public event EventHandler ShowSignUpControl;
         #endregion
 
-        public LoginViewModel()
+        public AuthViewModel()
         {
             InitCommand();
         }
@@ -89,12 +101,6 @@ namespace ContactCar.ViewModel
         {
             LoginCommand = new DelegateCommand(OnLogin);
             SignUpCommand = new DelegateCommand(OnSignUp);
-            SignUpCtrlCommand = new DelegateCommand(ShowSignUp);
-        }
-
-        private void ShowSignUp()
-        {
-            ShowSignUpControl?.Invoke(this, null);
         }
 
         private void OnSignUp()
@@ -106,19 +112,33 @@ namespace ContactCar.ViewModel
             json["email"] = _email;
             json["address"] = _address;
 
+            SignUpResult?.Invoke(true, null);
+            ResetProperty();
+
+            return;
+            //TODO: await 추가
             var data = App.networkManager.SignUp(json);
 
-            if (data != null || (int)HttpStatusCode.OK == data.Status)
-            {// 로그인 성공
-                /*LoginResult?.Invoke(true, data.Data);
-                return;*/
+            if (data == null)
+            {
+                Desc = "회원가입에 실패했습니다.";
+                SignUpResult?.Invoke(false, null);
+                return;
             }
+
+            if (data != null || (int)HttpStatusCode.OK == data.Status)
+            {// 회원가입 성공
+                SignUpResult?.Invoke(true, data.Data);
+                ResetProperty();
+                return;
+            }
+
+            SignUpResult?.Invoke(false, null);
         }
 
-        private void InitProperty()
+        private void ResetProperty()
         {
-            _id = null;
-            _password = null;
+            Password = null;
         }
 
         private void OnLogin()
@@ -130,7 +150,7 @@ namespace ContactCar.ViewModel
 
             var data = App.networkManager.Login(_id, _password);
 
-            if(data != null || (int)HttpStatusCode.OK == data.Status)
+            if (data.Data != null && (int)HttpStatusCode.OK == data.Status)
             {// 로그인 성공
                 LoginResult?.Invoke(true, data.Data);
                 return;

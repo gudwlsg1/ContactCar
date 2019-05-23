@@ -11,6 +11,6 @@
     <Grid>
         <ctrl:LoginControl x:Name="LoginControl" Visibility="Visible"/>
         <ctrl:SignUpControl x:Name="SignUpControl" Visibility="Collapsed" Background="White"/>
-        <ctrl:InitialControl x:Name="initControl" Visibility="Collapsed"/>
+        <ctrl:HomeControl x:Name="HomeControl" Visibility="Collapsed"/>
     </Grid>
 </Window>

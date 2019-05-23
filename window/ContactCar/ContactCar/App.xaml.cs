@@ -19,6 +19,6 @@ namespace ContactCar
         public static User myInfo = new User(); 
 
         public static NetworkManager networkManager = new NetworkManager();
-        public static LoginViewModel loginViewModel = new LoginViewModel();
+        public static AuthViewModel authViewModel = new AuthViewModel();
     }
 }
