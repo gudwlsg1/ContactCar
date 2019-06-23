@@ -29,7 +29,7 @@ namespace ContactCar.Controls
             App.authViewModel.SignUpResult += AuthViewModel_SignUpResult;
         }
 
-        private void AuthViewModel_SignUpResult(bool success, Model.User myInfo)
+        private async Task AuthViewModel_SignUpResult(bool success, Model.User myInfo)
         {
             if (success)
             {

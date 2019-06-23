@@ -50,6 +50,12 @@
     <Reference Include="RestSharp, Version=106.6.9.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.6.9\lib\net452\RestSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Syncfusion.Licensing, Version=17.1451.0.52, Culture=neutral, PublicKeyToken=632609b4d040f6b4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Syncfusion.Licensing.17.1.0.52\lib\net451\Syncfusion.Licensing.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfChart.WPF, Version=17.1451.0.52, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
+      <HintPath>..\packages\Syncfusion.SfChart.WPF.17.1.0.52\lib\net451\Syncfusion.SfChart.WPF.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -79,21 +85,36 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\DetailViewControl.xaml.cs">
+      <DependentUpon>DetailViewControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\HomeControl.xaml.cs">
       <DependentUpon>HomeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LoginControl.xaml.cs">
       <DependentUpon>LoginControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PostControl.xaml.cs">
+      <DependentUpon>PostControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SignUpControl.xaml.cs">
       <DependentUpon>SignUpControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converter\FindUserNameByUserIdxConverter.cs" />
+    <Compile Include="Model\Nothing.cs" />
+    <Compile Include="Model\Picture.cs" />
+    <Compile Include="Model\Sale.cs" />
     <Compile Include="Model\User.cs" />
     <Compile Include="Network\CResponse.cs" />
     <Compile Include="Network\LoginManager.cs" />
+    <Compile Include="Network\MemberManager.cs" />
+    <Compile Include="Network\Model\MultiPartFile.cs" />
     <Compile Include="Network\NetworkManager.cs" />
+    <Compile Include="Network\PictureManager.cs" />
+    <Compile Include="Network\SaleManager.cs" />
     <Compile Include="ViewModel\AuthViewModel.cs" />
-    <Compile Include="ViewModel\UserViewModel.cs" />
+    <Compile Include="ViewModel\PictureViewModel.cs" />
+    <Compile Include="ViewModel\SaleViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -127,11 +148,19 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\DetailViewControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\HomeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LoginControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PostControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

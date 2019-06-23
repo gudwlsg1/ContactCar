@@ -4,6 +4,8 @@ using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -67,6 +69,7 @@ namespace ContactCar.ViewModel
         }
 
         private string _desc;
+
         public string Desc
         {
             get => _desc;
@@ -75,6 +78,10 @@ namespace ContactCar.ViewModel
                 SetProperty(ref _desc, value);
             }
         }
+
+        public ObservableCollection<User> Items { get; set; }
+
+        private object _lock = new object();
         #endregion
 
         #region Command
@@ -83,7 +90,7 @@ namespace ContactCar.ViewModel
         #endregion
 
         #region Event
-        public delegate void AuthResultHandler(bool success, User myInfo);
+        public delegate Task AuthResultHandler(bool success, User myInfo);
 
         public event AuthResultHandler LoginResult;
         public event AuthResultHandler SignUpResult;
@@ -92,6 +99,7 @@ namespace ContactCar.ViewModel
         public AuthViewModel()
         {
             InitCommand();
+            Items = new ObservableCollection<User>();
         }
 
         private void InitCommand()
@@ -108,14 +116,15 @@ namespace ContactCar.ViewModel
             json["name"] = _name;
             json["email"] = _email;
             json["address"] = _address;
-
+#if false
             SignUpResult?.Invoke(true, null);
             ResetProperty();
 
             return;
+#else
             var data = await App.networkManager.SignUp(json);
 
-            if (data == null)
+            if (data == null || data.Status != (int)HttpStatusCode.OK)
             {
                 Desc = "회원가입에 실패했습니다.";
                 SignUpResult?.Invoke(false, null);
@@ -130,11 +139,13 @@ namespace ContactCar.ViewModel
             }
 
             SignUpResult?.Invoke(false, null);
+#endif
         }
 
         private void ResetProperty()
         {
             Password = null;
+            Desc = null;
         }
 
         private async Task OnLoginAsync()
@@ -150,6 +161,12 @@ namespace ContactCar.ViewModel
 
             var data = await App.networkManager.LoginAsync(json);
 
+            if(data == null || data.Status != (int)HttpStatusCode.OK)
+            {
+                Desc = "로그인에 실패하였습니다.";
+                return;
+            }
+
             if (data.Data != null && (int)HttpStatusCode.OK == data.Status)
             {// 로그인 성공
                 LoginResult?.Invoke(true, data.Data);
@@ -157,6 +174,29 @@ namespace ContactCar.ViewModel
             }
 
             LoginResult?.Invoke(false, null);
+        }
+
+        public async Task GetDataAsync()
+        {
+            var resp = await App.networkManager.GetMemberAsync();
+
+            if(resp == null || resp.Status != 200)
+            {
+                return;
+            }
+
+            lock (_lock)
+            {
+                AddMembers(resp.Data);
+            }
+        }
+
+        private void AddMembers(List<User> data)
+        {
+            foreach(User user in data)
+            {
+                this.Items.Add(user);
+            }
         }
     }
 }

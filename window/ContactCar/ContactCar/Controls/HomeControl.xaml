@@ -4,9 +4,49 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ContactCar.Controls"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:converter="clr-namespace:ContactCar.Converter"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Background="White">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="cvsSales" Source="{Binding Items}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Created"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <converter:FindUserNameByUserIdxConverter x:Key="FindUserNameByUserIdxConverter"/>
+
+        <Style TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="Noto Sans CJK kr" />
+            <Setter Property="FontSize" Value="22" />
+        </Style>
+
+        <Style TargetType="{x:Type DataGridCell}">
+            <Style.Setters>
+                <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                <Setter Property="TextBlock.FontFamily" Value="Noto Sans CJK kr"/>
+                <Setter Property="TextBlock.FontSize" Value="16"/>
+            </Style.Setters>
+        </Style>
+
+        <DataTemplate x:Key="SaleTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.7*"/>
+                    <ColumnDefinition Width="0.3*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Vertical">
+                    
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.2*"/>
@@ -21,10 +61,41 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Button />
-                <Button />
+                <Button Content="중고차 등록하기" Height="30" Width="150"
+                        FontSize="12" FontFamily="NanumBarunGothic"
+                        Click="ShowPostControl"/>
+                <Grid Background="Red">
+
+                </Grid>
             </StackPanel>
         </Grid>
         
+        
+        <DataGrid Grid.Row="1" Grid.RowSpan="2"
+                  AutoGenerateColumns="False"
+                  ItemsSource="{Binding Source={StaticResource cvsSales}}"
+                  CanUserAddRows="False" IsReadOnly="True"
+                  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray"
+                  AlternatingRowBackground="#f4f7fe" AlternationCount="2"
+                  SelectionMode="Single"
+                  Background="Transparent"
+                  >
+            <i:InvokeCommandAction Command="{Binding ShowDetailViewCommand}"/>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="제목" Width="800" Binding="{Binding Title}"/>
+                <DataGridTextColumn Header="작성자" Width="200" Binding="{Binding UserId, Converter={StaticResource FindUserNameByUserIdxConverter}}"/>
+                <DataGridTextColumn Header="작성일" Width="250" Binding="{Binding Created}"/>
+            </DataGrid.Columns>
+
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
+
+        <local:PostControl x:Name="ctrlPost" Grid.Row="1" Grid.RowSpan="2" Visibility="Collapsed"/>
+        <local:DetailViewControl x:Name="ctrlDetailView" Grid.Row="0" Grid.RowSpan="3" Visibility="Collapsed"/>
     </Grid>
+    
 </UserControl>

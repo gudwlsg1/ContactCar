@@ -20,5 +20,7 @@ namespace ContactCar
 
         public static NetworkManager networkManager = new NetworkManager();
         public static AuthViewModel authViewModel = new AuthViewModel();
+        public static SaleViewModel SaleViewModel = new SaleViewModel();
+        public static PictureViewModel PictureViewModel = new PictureViewModel();
     }
 }

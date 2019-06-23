@@ -26,15 +26,16 @@ namespace ContactCar
             InitializeComponent();
 
             LoginControl.ShowSignUpCtrl += LoginControl_ShowSignUpCtrl;
-            App.authViewModel.LoginResult += AuthViewModel_LoginResult;
+            App.authViewModel.LoginResult += AuthViewModel_LoginResultAsync;
         }
 
         private void LoginControl_ShowSignUpCtrl(object sender, EventArgs e)
         {
+            App.authViewModel.Desc = string.Empty;
             SignUpControl.Visibility = Visibility.Visible;
         }
 
-        private void AuthViewModel_LoginResult(bool success, User myInfo)
+        private async Task AuthViewModel_LoginResultAsync(bool success, User myInfo)
         {
             if (success)
             {
@@ -42,7 +43,22 @@ namespace ContactCar
 
                 LoginControl.Visibility = Visibility.Collapsed;
                 HomeControl.Visibility = Visibility.Visible;
+
+                await LoadDataAsync();
             }
+        }
+
+        private async Task LoadDataAsync()
+        {
+            await GetMemberData();
+            await App.SaleViewModel.GetDataAsync();
+            await App.PictureViewModel.GetDataAsync();
+        }
+
+        private async Task GetMemberData()
+        {
+            await App.authViewModel.GetDataAsync();
+            App.myInfo = App.authViewModel.Items.Where(u => u.UserId.Equals(App.authViewModel.Id)).FirstOrDefault();
         }
     }
 }

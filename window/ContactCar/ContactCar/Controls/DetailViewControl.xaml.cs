@@ -16,31 +16,26 @@ using System.Windows.Shapes;
 namespace ContactCar.Controls
 {
     /// <summary>
-    /// Interaction logic for HomeControl.xaml
+    /// Interaction logic for DetailViewControl.xaml
     /// </summary>
-    public partial class HomeControl : UserControl
+    public partial class DetailViewControl : UserControl
     {
-        public HomeControl()
+        public DetailViewControl()
         {
             InitializeComponent();
 
-            this.Loaded += HomeControl_Loaded;
+            this.Loaded += DetailViewControl_Loaded;
         }
 
-        private void HomeControl_Loaded(object sender, RoutedEventArgs e)
+        private void DetailViewControl_Loaded(object sender, RoutedEventArgs e)
         {
-            this.DataContext = App.SaleViewModel;
+            this.Loaded -= DetailViewControl_Loaded;
             App.SaleViewModel.ShowDetailViewEvent += SaleViewModel_ShowDetailViewEvent;
         }
 
         private void SaleViewModel_ShowDetailViewEvent(Model.Sale selectionSale)
         {
-            ctrlDetailView.Visibility = Visibility.Visible;
-        }
-
-        private void ShowPostControl(object sender, RoutedEventArgs e)
-        {
-            ctrlPost.Visibility = Visibility.Visible;
+           // this.DataContext = selectionSale;
         }
     }
 }
