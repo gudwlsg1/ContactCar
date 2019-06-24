@@ -30,10 +30,10 @@ namespace ContactCar.Controls
         private void HomeControl_Loaded(object sender, RoutedEventArgs e)
         {
             this.DataContext = App.SaleViewModel;
-            App.SaleViewModel.ShowDetailViewEvent += SaleViewModel_ShowDetailViewEvent;
+            App.SaleViewModel.ShowDetailViewEvent += SaleViewModel_ShowDetailViewEvent; ;
         }
 
-        private void SaleViewModel_ShowDetailViewEvent(Model.Sale selectionSale)
+        private void SaleViewModel_ShowDetailViewEvent(object sender, EventArgs e)
         {
             ctrlDetailView.Visibility = Visibility.Visible;
         }

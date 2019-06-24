@@ -62,9 +62,11 @@
                  Text="{Binding Content}"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" 
                         Grid.Row="3">
-                <Button Content="확인" MinWidth="60" Command="{Binding PostCommand}"/>
+                <Button Content="확인" MinWidth="60" 
+                        Command="{Binding PostCommand}"
+                        IsDefault="True"/>
                 <Button Content="취소" MinWidth="60" 
-                        Margin="20 0 0 0" Command="{Binding CloseControleCommand}"/>
+                        Margin="20 0 0 0" Command="{Binding CloseControlCommand}"/>
             </StackPanel>
     </Grid>
 </UserControl>

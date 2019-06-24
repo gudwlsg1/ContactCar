@@ -11,7 +11,7 @@ namespace ContactCar.Network
 {
     public partial class NetworkManager
     {
-        private const string SALE = "sale";
+        private const string SALE = "sale/";
         public async Task<CResponse<List<Sale>>> GetSaleData()
         {
             var resp = await GetResponseAsync<List<Sale>>(SALE, RestSharp.Method.GET);
@@ -24,6 +24,16 @@ namespace ContactCar.Network
             return resp;
         }
 
-        
+        public async Task<CResponse<Sale>> EditSale(int id, JObject json)
+        {
+            var resp = await GetResponseAsync<Sale>(SALE + id, RestSharp.Method.PUT, json);
+            return resp;
+        }
+
+        public async Task<CResponse<Boolean>> DeleteSale(int id)
+        {
+            var resp = await GetResponseAsync<Boolean>(SALE + id, RestSharp.Method.DELETE);
+            return resp;
+        }
     }
 }

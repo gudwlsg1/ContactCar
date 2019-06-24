@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ContactCar.Model;
 
 namespace ContactCar.Controls
 {
@@ -31,11 +32,52 @@ namespace ContactCar.Controls
         {
             this.Loaded -= DetailViewControl_Loaded;
             App.SaleViewModel.ShowDetailViewEvent += SaleViewModel_ShowDetailViewEvent;
+            App.SaleViewModel.ResultEvent += SaleViewModel_ResultEvent; ;
+           // this.DataContext = App.SaleViewModel.SelectedItem; //왜 안될까?
         }
 
-        private void SaleViewModel_ShowDetailViewEvent(Model.Sale selectionSale)
+        private void SaleViewModel_ResultEvent(bool isSuccess, string msg = null)
         {
-           // this.DataContext = selectionSale;
+            if (isSuccess)
+            {
+                this.Visibility = Visibility.Collapsed;
+            }
+
+            if (!string.IsNullOrEmpty(msg))
+            {
+                MessageBox.Show(msg);
+            }
+        }
+
+        private void SaleViewModel_ShowDetailViewEvent(object sender, EventArgs e)
+        {
+            this.DataContext = App.SaleViewModel;
+        }
+
+        private void ReSetTextBox()
+        {
+            tbTitle.IsReadOnly = true;
+            tbContent.IsReadOnly = true;
+            tbPrice.IsReadOnly = true;
+        }
+
+        private void TextBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            textBox.IsReadOnly = false;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+            ReSetProperty();
+            ReSetTextBox();
+        }
+
+        private void ReSetProperty()
+        {
+            App.SaleViewModel.SelectedItem = null;
+            App.SaleViewModel.Comment = string.Empty;
         }
     }
 }

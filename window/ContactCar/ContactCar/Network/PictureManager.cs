@@ -1,5 +1,6 @@
 ﻿using ContactCar.Model;
 using ContactCar.Network.Model;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace ContactCar.Network
     public partial class NetworkManager
     {
         private const string PICTURE = "picture/";
-        public async Task<CResponse<Nothing>> UploadFiles(MultiPartFile[] files, int postId)
+        public async Task<CResponse<List<Picture>>> UploadFiles(MultiPartFile[] files, int postId)
         {
-            var resp = await GetResponseAsync<Nothing>(PICTURE + postId, RestSharp.Method.POST, null, files);
+            var resp = await GetResponseAsync<List<Picture>>(PICTURE + postId, RestSharp.Method.POST, null, files);
 
             return resp;
         }
@@ -23,6 +24,5 @@ namespace ContactCar.Network
             var resp = await GetResponseAsync<List<Picture>>(PICTURE, RestSharp.Method.GET);
             return resp;
         }
-
     }
 }

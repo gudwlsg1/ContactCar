@@ -1,4 +1,5 @@
-﻿using ContactCar.Model;
+﻿using ContactCar.Command;
+using ContactCar.Model;
 using ContactCar.Network.Model;
 using Newtonsoft.Json.Linq;
 using Prism.Commands;
@@ -6,6 +7,7 @@ using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -40,17 +42,24 @@ namespace ContactCar.ViewModel
             set => SetProperty(ref _price, value);
         }
 
+        private string _comment;
+        public string Comment
+        {
+            get => _comment;
+            set => SetProperty(ref _comment, value);
+        }
+
         public ObservableCollection<Sale> Items { get; set; }
 
         public MultiPartFile[] Files { get; set; }
 
-        private Sale _SelectionItem;
-        public Sale SelectionItem
+        private Sale _SelectedItem;
+        public Sale SelectedItem
         {
-            get => _SelectionItem;
+            get => _SelectedItem;
             set
             {
-                SetProperty(ref _SelectionItem, value);
+                SetProperty(ref _SelectedItem, value, nameof(SelectedItem));
             }
         }
         #endregion
@@ -60,6 +69,13 @@ namespace ContactCar.ViewModel
         public ICommand OpenFileDialogCommand { get; set; }
         public ICommand CloseControlCommand { get; set; }
         public ICommand ShowDetailViewCommand { get; set; }
+        public ICommand EditSaleCommand { get; set; }
+        public ICommand DeleteSaleCommand { get; set; }
+        public ICommand AddCommentCommand { get; set; }
+
+        //public ICommand DeleteCommentCommand { get; set; }
+        public DeleteCommentCommand DeleteCommentCommand { get; set; }
+        public UpdateCommentCommand UpdateCommentCommand { get; set; }
         #endregion
 
         #region Event
@@ -67,8 +83,10 @@ namespace ContactCar.ViewModel
 
         public event EventHandler CloseControlEvent;
 
-        public delegate void DetailViewHandler(Sale selectionSale);
-        public event DetailViewHandler ShowDetailViewEvent;
+        public event EventHandler ShowDetailViewEvent;
+
+        public delegate void ResultHandler(bool isSuccess, string msg = null);
+        public event ResultHandler ResultEvent;
         #endregion
 
         public SaleViewModel()
@@ -77,16 +95,151 @@ namespace ContactCar.ViewModel
             OpenFileDialogCommand = new DelegateCommand(OnOpenFileDialog);
             PostCommand = new DelegateCommand(async () => await OnPostAsync());
             CloseControlCommand = new DelegateCommand(OnCloseControl);
-            ShowDetailViewCommand = new DelegateCommand(ShowDetailView);
+            ShowDetailViewCommand = new DelegateCommand(async () => await ShowDetailView());
+            EditSaleCommand = new DelegateCommand(async () => await EditSaleAsync());
+            DeleteSaleCommand = new DelegateCommand(async () => await DeleteSaleAsync());
+            AddCommentCommand = new DelegateCommand(async () => await AddCommentAsync());
+            DeleteCommentCommand = new DeleteCommentCommand(DeleteCommentAsync);
+            UpdateCommentCommand = new UpdateCommentCommand(UpdateCommentAsync);
         }
 
-        private void ShowDetailView()
+        private async void UpdateCommentAsync(int commentId)
         {
-            if(this.SelectionItem == null)
+            JObject json = new JObject();
+            json["content"] = Comment;
+
+            var resp = await App.networkManager.EditComment(commentId, json);
+
+            if (resp == null || resp.Status != (int)HttpStatusCode.OK)
+            {
+                ResultEvent?.Invoke(false, "댓글 수정에 실패하였습니다.");
+                return;
+            }
+
+            if (resp != null && resp.Status == (int)HttpStatusCode.OK)
+            {
+                Comment comment = SelectedItem.lstComment.Where(c => c.Id == commentId).FirstOrDefault();
+
+                if (comment == null)
+                {
+                    return;
+                }
+                comment.Content = resp.Data.Content;
+            }
+        }
+
+        private async void DeleteCommentAsync(int commentId)
+        {
+            var resp = await App.networkManager.DeleteComment(commentId);
+
+            if (resp == null || resp.Status != (int)HttpStatusCode.OK)
             {
                 return;
             }
-            ShowDetailViewEvent?.Invoke(this.SelectionItem);
+
+            if (resp != null && resp.Status == (int)HttpStatusCode.OK)
+            {
+                Comment comment = SelectedItem.lstComment.Where(c => c.Id == commentId).FirstOrDefault();
+                
+                if(comment == null)
+                {
+                    return;
+                }
+                SelectedItem.lstComment.Remove(comment);
+            }
+        }
+
+        private async Task AddCommentAsync()
+        {
+            JObject json = new JObject();
+            json["userId"] = App.myInfo.Id;
+            json["postId"] = SelectedItem.Id;
+            json["content"] = _comment;
+
+            Comment = string.Empty;
+
+            var resp = await App.networkManager.PostComment(json);
+
+            if (resp == null || resp.Status != (int)HttpStatusCode.OK)
+            {
+                return;
+            }
+
+            if (resp != null && resp.Status == (int)HttpStatusCode.OK)
+            {
+                SelectedItem.lstComment.Add(resp.Data);
+            }
+        }
+
+        private async Task EditSaleAsync()
+        {
+            JObject json = new JObject();
+            json["title"] = SelectedItem.Title;
+            json["content"] = SelectedItem.Content;
+            json["price"] = SelectedItem.Price;
+
+            if(SelectedItem == null)
+            {
+                return;
+            }
+
+            var resp = await App.networkManager.EditSale(SelectedItem.Id, json);
+
+            if (resp == null || resp.Status != (int)HttpStatusCode.OK)
+            {
+                ResultEvent?.Invoke(false, "수정에 실패하였습니다.");
+                return;
+            }
+
+            if (resp != null && resp.Status == (int)HttpStatusCode.OK)
+            {
+                Sale respSale = resp.Data;
+                SelectedItem.Title = respSale.Title;
+                SelectedItem.Content = respSale.Content;
+                SelectedItem.Price = respSale.Price;
+                ResultEvent?.Invoke(true, "수정 성공하였습니다.");
+            }
+        }
+
+        private async Task DeleteSaleAsync()
+        {
+            var resp = await App.networkManager.DeleteSale(SelectedItem.Id);
+
+            if(resp == null || resp.Status != (int)HttpStatusCode.OK)
+            {
+                ResultEvent?.Invoke(false, "삭제에 실패하였습니다.");
+                return;
+            }
+
+            if(resp != null && resp.Status == (int)HttpStatusCode.OK)
+            {
+                this.Items.Remove(SelectedItem);
+                SelectedItem = null;
+                ResultEvent?.Invoke(true);
+            }
+        }
+
+        private async Task ShowDetailView()
+        {
+            if(this.SelectedItem == null)
+            {
+                return;
+            }
+
+            var resp = await App.networkManager.GetCommentData(SelectedItem.Id);
+
+            if (resp == null || resp.Status != (int)HttpStatusCode.OK)
+            {
+                return;
+            }
+
+            if (resp != null && resp.Status == (int)HttpStatusCode.OK)
+            {
+                SelectedItem.lstComment.Clear();
+                resp.Data.ForEach(c => SelectedItem.lstComment.Add(c));
+            }
+                
+            ShowDetailViewEvent?.Invoke(this, null);
         }
 
         private void OnCloseControl()
@@ -122,17 +275,25 @@ namespace ContactCar.ViewModel
                 {
                     int postId = data.Data.Id;
                     var resp = await App.networkManager.UploadFiles(Files, postId);
-                        foreach(MultiPartFile file in Files)
-                        {
-                            Picture picture = new Picture() { Path = string.Format("http://localhost:8000/pictures/{0}", file.FileName), PostId = postId };
-                            data.Data.lstPicture.Add(picture);
-                        }
-                        this.Items.Add(data.Data);
-                        Files = null;
+
+                    if(resp != null && resp.Status == (int)HttpStatusCode.OK)
+                    {
+                        data.Data.lstPicture = resp.Data;
+                    }
                 }
+                this.Items.Add(data.Data);
+                ClearProperty();
                 CloseControlEvent?.Invoke(this, null);
                 return;
             }
+        }
+
+        private void ClearProperty()
+        {
+            Title = string.Empty;
+            Content = string.Empty;
+            Price = 0;
+            Files = null;
         }
 
         public async Task GetDataAsync()

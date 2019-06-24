@@ -61,7 +61,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Button Content="중고차 등록하기" Height="30" Width="150"
+                <Button Content="글 등록하기" Height="30" Width="150"
                         FontSize="12" FontFamily="NanumBarunGothic"
                         Click="ShowPostControl"/>
                 <Grid Background="Red">
@@ -79,8 +79,12 @@
                   AlternatingRowBackground="#f4f7fe" AlternationCount="2"
                   SelectionMode="Single"
                   Background="Transparent"
-                  >
-            <i:InvokeCommandAction Command="{Binding ShowDetailViewCommand}"/>
+                  SelectedItem="{Binding SelectedItem}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding ShowDetailViewCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="제목" Width="800" Binding="{Binding Title}"/>
                 <DataGridTextColumn Header="작성자" Width="200" Binding="{Binding UserId, Converter={StaticResource FindUserNameByUserIdxConverter}}"/>

@@ -4,32 +4,152 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ContactCar.Controls"
+             xmlns:converter="clr-namespace:ContactCar.Converter"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="White">
+    <UserControl.Resources>
+        <converter:IsMeToVisibilityConverter x:Key="IsMeToVisibilityConverter"/>
+        <converter:FindUserNameByUserIdxConverter x:Key="FindUserNameByUserIdxConverter"/>
+        <Style x:Key="MyWaterMarkStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Grid Height="35">
+                            <Border Background="White" BorderBrush="#FF7D8683" BorderThickness="1"/>
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="5,0,0,0" VerticalAlignment="Center" />
+                            <Label Margin="5,0,0,0" x:Name="WaterMarkLabel" Content="{TemplateBinding Tag}" VerticalAlignment="Center"
+                               Visibility="Collapsed" Foreground="Gray" FontFamily="Arial"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Text" Value=""/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Visibility" TargetName="WaterMarkLabel" Value="Visible"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="DimGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+    </UserControl.Resources>
     <Grid>
         <StackPanel>
-            <TextBlock Text="{Binding Title}" 
-                                   HorizontalAlignment="Stretch" FontSize="36"
-                                   TextAlignment="Center"/>
-            <TextBlock Text="{Binding Content}" HorizontalAlignment="Center" FontSize="32"/>
-            <TextBlock Text="{Binding Price, StringFormat='가격 : {0}'}" HorizontalAlignment="Right" FontSize="36"/>
-            <ListBox ItemsSource="{Binding lstPicture}">
+            <TextBox x:Name="tbTitle"
+                     Text="{Binding SelectedItem.Title}" 
+                     HorizontalAlignment="Stretch" FontSize="58"
+                     TextAlignment="Center"
+                     MouseDoubleClick="TextBox_MouseDoubleClick"
+                     IsReadOnly="True"
+                     BorderThickness="0"/>
+            
+            <ListBox ItemsSource="{Binding SelectedItem.lstPicture}" BorderThickness="0">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="Width" Value="{Binding ActualWidth}"></Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemsPanel>
-                    <!--<ItemsPanelTemplate>
-                                    <WrapPanel IsItemsHost="True"/>
-                                </ItemsPanelTemplate>-->
                     <ItemsPanelTemplate>
-                        <UniformGrid Columns="{Binding Path=Items.Count,RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
+                        <WrapPanel />
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding Path}" HorizontalAlignment="Center"
-                                           Width="auto" Height="200"/>
+                        <Image Source="{Binding Path}" MinHeight="140"
+                               MaxHeight="200"
+                               HorizontalAlignment="Center"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <TextBlock Text="{Binding Created, StringFormat='작성일 : {0}'}" HorizontalAlignment="Right" FontSize="22"/>
+            
+            <TextBox x:Name="tbContent"
+                     Text="{Binding SelectedItem.Content}" 
+                     HorizontalAlignment="Stretch" FontSize="32"
+                     IsReadOnly="True"
+                     MouseDoubleClick="TextBox_MouseDoubleClick"
+                     BorderThickness="0"
+                     TextAlignment="Center"/>
+            
+            <ListView x:Name="lvComment"
+                      ItemsSource="{Binding SelectedItem.lstComment}"
+                      HorizontalAlignment="Stretch"
+                      BorderThickness="0"
+                      SelectedItem="{Binding SelectCommentItem}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="10 0 10 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.1*"/>
+                                <ColumnDefinition Width="0.8*"/>
+                                <ColumnDefinition Width="0.05*"/>
+                                <ColumnDefinition Width="0.05*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding UserId, Converter={StaticResource FindUserNameByUserIdxConverter}}" Grid.Column="0"/>
+                            <TextBox x:Name="tbComment" Text="{Binding Content}" 
+                                     Grid.Column="1"
+                                     BorderThickness="0" IsReadOnly="True"
+                                     MouseDoubleClick="TextBox_MouseDoubleClick"/>
+                            <TextBlock Text="{Binding Created}" Grid.Column="2"/>
+                            <StackPanel Grid.Column="3" 
+                                        Visibility="{Binding UserId, Converter={StaticResource IsMeToVisibilityConverter}}"
+                                        Margin="10 0 0 0"
+                                        Orientation="Horizontal">
+                                <Button Content="수정"
+                                    Command="{Binding ElementName=lvComment, Path=DataContext.UpdateCommentCommand}"
+                                    CommandParameter="{Binding Path=Id}"
+                                    Width="50"/>
+                                
+                                <Button Content="삭제"
+                                    Command="{Binding ElementName=lvComment, Path=DataContext.DeleteCommentCommand}"
+                                    CommandParameter="{Binding Path=Id}"
+                                    Margin="10 0 0 0" Width="50"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <TextBox x:Name="tbPrice"
+                     Text="{Binding SelectedItem.Price, StringFormat='가격 : {0}'}" 
+                       HorizontalAlignment="Right" FontSize="36"
+                       IsReadOnly="True"
+                      MouseDoubleClick="TextBox_MouseDoubleClick"
+                     BorderThickness="0"/>
+            <TextBlock Text="{Binding SelectedItem.Created, StringFormat='작성일 : {0}'}" 
+                       HorizontalAlignment="Right" FontSize="22"/>
+            <StackPanel Orientation="Horizontal" Margin="10 20 10 20" HorizontalAlignment="Center">
+                <TextBox Tag="내용" Style="{StaticResource MyWaterMarkStyle}" Margin="0 0 18 0"
+                         Width="1200" Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Content="확인" Width="120"
+                        Command="{Binding AddCommentCommand}"
+                        IsDefault="True"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="btnEdit" Content="수정" 
+                    Width="150" Height="60" 
+                    Margin="0 0 10 0"
+                    Command="{Binding EditSaleCommand}"
+                    Visibility="{Binding SelectedItem.UserId, Converter={StaticResource IsMeToVisibilityConverter}}"/>
+                <Button x:Name="btnList" Content="목록" 
+                    Width="150" Height="60" 
+                    Click="Button_Click" Margin="0 0 10 0"/>
+                <Button x:Name="btnDelete" Content="삭제" 
+                    Width="150" Height="60" 
+                    Command="{Binding DeleteSaleCommand}" Margin="0 0 10 0"
+                    Visibility="{Binding SelectedItem.UserId, Converter={StaticResource IsMeToVisibilityConverter}}"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>
